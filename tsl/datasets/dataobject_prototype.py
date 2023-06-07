@@ -58,7 +58,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         return [
 #             'metr_la.h5', 'distances_la.csv', 'sensor_locations_la.csv',
 #             'sensor_ids_la.txt'
-            'testind3.ttl'
+            'raw_files_to_remove/testind3.ttl'
         ]
 
     # Decoradores para indicar que la clase debe de contar con tales archivos
@@ -103,31 +103,31 @@ class CrimeMexicoCityTTL(DatetimeDataset):
 
     ### esta version da el conteo por alcaldia
 
-    def contained_1(geo_df, dfpoints):
-        """
-            Esta funcion regresara una lista de tamanio len(geo_df)
-            donde cada elemento indicara a que alcaldia pertenece
-            con una correspondencia 1:1 a cada punto (denuncia) disponible en
-            el dataframe.
-        """
-        #usamos la funcion within de shapely, para ver si el punto esta dentro de la alcaldia
-        #dfpoints serian las coordenadas de las denuncias
-        geo_df['sum']=''
-        for i in range(0, len(geo_df)):
-            polygon=geo_df.geometry.iloc[i]
-            sum=0
-            for j in range(0, len(dfpoints)):
-                cont=Point(dfpoints.latitud.iloc[j],dfpoints.longitud.iloc[j]).within(polygon)
-                if cont==True:
-                sum+=1
-            geo_df['sum'].iloc[i]=sum
-        return geo_df
-        ### Siento que es medio lento, ya lo he hecho varias veces pero con contains, y creo que tarda mas, ahorita con estos 20 putnos tarda menos. y funciona igual
+#     def contained_1(geo_df, dfpoints):
+#         """
+#             Esta funcion regresara una lista de tamanio len(geo_df)
+#             donde cada elemento indicara a que alcaldia pertenece
+#             con una correspondencia 1:1 a cada punto (denuncia) disponible en
+#             el dataframe.
+#         """
+#         #usamos la funcion within de shapely, para ver si el punto esta dentro de la alcaldia
+#         #dfpoints serian las coordenadas de las denuncias
+#         geo_df['sum']=''
+#         for i in range(0, len(geo_df)):
+#             polygon=geo_df.geometry.iloc[i]
+#             sum=0
+#             for j in range(0, len(dfpoints)):
+#                 cont=Point(dfpoints.latitud.iloc[j],dfpoints.longitud.iloc[j]).within(polygon)
+#                 if cont==True:
+#                 sum+=1
+#             geo_df['sum'].iloc[i]=sum
+#         return geo_df
+#         ### Siento que es medio lento, ya lo he hecho varias veces pero con contains, y creo que tarda mas, ahorita con estos 20 putnos tarda menos. y funciona igual
 
     # En esencia los argumentos de esta function/metodo no deberian ded existir
     # puesto que ambos elementos deberán ser atributos del objeto previamente
     # declarados.
-    def contained_2(geo_df, points_series):
+    def contained(geo_df, points_series):
         # Se obtienen los indices/nombre de las alcaldias a la que pertenecen cada punto
         # el conteo puede llevarse a cabo despues con un built-in method "group-by"
         list_belonging = list(map(geo_df['geometry'].contains, points_series))
@@ -186,7 +186,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         }
 
         kg = kglab.KnowledgeGraph(namespaces = NAMESPACES)
-        _ = kg.load_rdf("testind3.ttl")
+        _ = kg.load_rdf("raw_files_to_remove/testind3.ttl")
 
         # Buscamos tener id, delito, atributos, coordenadas y fecha en el DF
         # A clasificar: crime:tieneCategoria
@@ -250,9 +250,9 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # # Encuentra su respectiva alcaldia y las respectivas coordenadas a evaluar
         # if aggregation_level == "alcaldia":
         # Se invoca la funcion y se le agrega la columnas al dataframe
-        index_geom, name_geo = contained_2(geo_df, denuncias_df["geometry"])
-        denuncias_df["index_alcaldia"] = index_geom
-        denuncias_df["nombre_alcaldia"] = name_geo
+        index_geom, name_geo = contained(geo_df, df["geometry"])
+        df["index_alcaldia"] = index_geom
+        df["nombre_alcaldia"] = name_geo
 
         # # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
         # dist = distance_matrix_crimes(denuncias_df)
