@@ -37,6 +37,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
     """
     url = "https://drive.switch.ch/index.php/s/Z8cKHAVyiDqkzaG/download"
 
+    print(f">>> CURRENT WORK DIRECTORY: [{os.getcwd()}]")
 
     similarity_options = {'distance'} # O que vamos a usar como medida de similitud para enlazar los nodos?
 
