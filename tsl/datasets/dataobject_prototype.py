@@ -280,14 +280,18 @@ class CrimeMexicoCityTTL(DatetimeDataset):
     
     # - ES CORRECTA LA IMPLEMENTACION PARA SIMILITUD A NIVEL DE AGEB Y ALCALDIA? COMO RELACIONARLOS?
     # - IMPLEMENTAR METODO DE SIMILITUD PARA NIVEL alcaldia [TODO]
+    # distancia_ageb, d_alcaldaia
 
-    # - Crear VM con todas las bibliotecas necesarias[TODO]
+    # probar con el ttl 
+    # ejemplo con red neurnal
+
+    # - Crear VM con todas las bibliotecas necesarias[OK]
 
     
     def compute_similarity(self, method: str, **kwargs):
         # De acuerdo con el atributo similarity_options declarado al inicio de la clase,
         # se debera implementar el tantos metodos como se tengan definidos en tal atributo
-        # con el fin de objetener una matriz de similitud para luego poder crear la matriz
+        # con el fin de objetener una matriz de  similitud para luego poder crear la matriz
         # de adyacencia. Sera necesario? no el mismo KG nos esta otorgando dicha matriz?
         # al igual que otros metodos que quiza debamos de ignorar?
         if method == "distance":
