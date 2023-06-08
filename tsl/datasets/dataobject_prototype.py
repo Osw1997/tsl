@@ -187,6 +187,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         }
 
         kg = kglab.KnowledgeGraph(namespaces = NAMESPACES)
+        print(f"--> CURRENT WORK DIRECTORY: [{os.getcwd()}]")
         _ = kg.load_rdf("raw_files_to_remove/testind3.ttl")
 
         # Buscamos tener id, delito, atributos, coordenadas y fecha en el DF
