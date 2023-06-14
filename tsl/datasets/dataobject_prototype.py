@@ -251,7 +251,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         df = df[valid_rows]
 
         # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
-        self.distance_matrix_crimes(denuncias_df)
+        self.distance_matrix_crimes(df)
 
         # Carga la matriz de distancias desde el archivo .npy
         path = os.path.join(self.root_dir, 'crime_cdmx_dist.npy')
