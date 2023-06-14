@@ -170,6 +170,9 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         kg = kglab.KnowledgeGraph(namespaces = NAMESPACES)
         print(f"--> CURRENT WORK DIRECTORY: [{os.getcwd()}]")
         _ = kg.load_rdf("/content/tsl/tsl/datasets/raw_files_to_remove/testind3.ttl")
+        
+        print("CURRENT NAMESPASE: ")
+        kg.describe_ns()
 
         # Buscamos tener id, delito, atributos, coordenadas y fecha en el DF
         # A clasificar: crime:tieneCategoria
