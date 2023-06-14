@@ -243,7 +243,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # # Encuentra su respectiva alcaldia y las respectivas coordenadas a evaluar
         # if aggregation_level == "alcaldia":
         # Se invoca la funcion y se le agrega la columnas al dataframe
-        index_geom, name_geo = contained(geo_df, df["geometry"])
+        index_geom, name_geo = self.contained(geo_df, df["geometry"])
         df["index_alcaldia"] = index_geom
         df["nombre_alcaldia"] = name_geo
         # Let's remove empty lat,long/Invalid rows
@@ -251,7 +251,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         df = df[valid_rows]
 
         # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
-        distance_matrix_crimes(denuncias_df)
+        self.distance_matrix_crimes(denuncias_df)
 
         # Carga la matriz de distancias desde el archivo .npy
         path = os.path.join(self.root_dir, 'crime_cdmx_dist.npy')
