@@ -108,7 +108,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
     # En esencia los argumentos de esta function/metodo no deberian ded existir
     # puesto que ambos elementos deberán ser atributos del objeto previamente
     # declarados.
-    def contained(geo_df, points_series):
+    def contained(self, geo_df, points_series):
         # Se obtienen los indices/nombre de las alcaldias a la que pertenecen cada punto
         # el conteo puede llevarse a cabo despues con un built-in method "group-by"
         list_belonging = list(map(geo_df['geometry'].contains, points_series))
@@ -117,7 +117,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         return index_geom, name_geo
 
     #### La matriz de sitancias entre denuncias y denuncias denuncias las podemos calcular asi
-    def distance_matrix_crimes(df):
+    def distance_matrix_crimes(self, df):
         #cambiamos la proyección para distancias en metros
 #         df = gpd.GeoDataFrame(
 #             df, geometry = gpd.points_from_xy(df.lat, df.long),
