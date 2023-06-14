@@ -254,7 +254,8 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         self.distance_matrix_crimes(df)
 
         # Carga la matriz de distancias desde el archivo .npy
-        path = os.path.join(self.root_dir, 'crime_cdmx_dist.npy')
+#         path = os.path.join(self.root_dir, 'crime_cdmx_dist.npy')
+        path = 'crime_cdmx_dist.npy'
         dist = np.load(path)
 
         return df, dist
