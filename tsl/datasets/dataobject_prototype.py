@@ -49,14 +49,14 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         self.root = root
         # load dataset
         df, dist, mask = self.load(impute_zeros=impute_zeros)
-        self.rawdf = df.copy()
-        super().__init__(target=df,
-                         mask=mask,
-                         freq=freq,
-                         similarity_score="distance",
-                         temporal_aggregation="nearest",
-                         name="CrimeMexicoCityTTL")
-#         self.add_covariate('dist', dist, pattern='n n')
+        return df
+#         super().__init__(target=df,
+#                          mask=mask,
+#                          freq=freq,
+#                          similarity_score="distance",
+#                          temporal_aggregation="nearest",
+#                          name="CrimeMexicoCityTTL")
+# #         self.add_covariate('dist', dist, pattern='n n')
 
     @property
     def raw_file_names(self):
