@@ -259,6 +259,11 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         path = 'crime_cdmx_dist.npy'
         dist = np.load(path)
 
+        # Lets convert the dataframe into another dataframe but using right format
+        df = df.value_counts(["date", "nombre_alcaldia"]).unstack(fill_value=0)
+        df = df.set_index(pd.DatetimeIndex(dftc.index))
+        df = df.resample('D').sum()
+
         return df, dist
 
     def load(self, impute_zeros=True):
