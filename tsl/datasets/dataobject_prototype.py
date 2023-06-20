@@ -48,7 +48,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # set root path
         self.root = root
         # load dataset
-        df, dist, mask = self.load(impute_zeros=impute_zeros)
+        df, dist, mask, df_raw = self.load(impute_zeros=impute_zeros)
         # return df
         super().__init__(target=df,
                          mask=mask,
@@ -260,20 +260,25 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         dist = np.load(path)
 
         # Lets convert the dataframe into another dataframe but using right format
+        df_raw = df.copy() # TO REMOVE: Only for testing purposes
         df = df.value_counts(["date", "nombre_alcaldia"]).unstack(fill_value=0)
         df = df.set_index(pd.DatetimeIndex(dftc.index))
         df = df.resample('D').sum()
 
-        return df, dist
+        # return df, dist
+        return df, dist, df_raw
 
     def load(self, impute_zeros=True):
         # Aqui se va a tener que hacer un poco de pre-procesamiento 
         # para la tabla creada a partir de la consulta SPARQL.
-        df, dist = self.load_raw()
+        df, dist, df_raw = self.load_raw() # TO REMOVE: Only for testing purposes
+        # df, dist = self.load_raw()
         mask = (df.values != 0.).astype('uint8')
         if impute_zeros:
             df = df.replace(to_replace=0., method='ffill')
-        return df, dist, mask
+        
+        return df, dist, mask, df_raw # TO REMOVE: Only for testing purposes
+        # return df, dist, mask
 
     # TODO:
     # UNA VEZ QUE PANCHO ME HAYA PASADO LOS DATAFRAMES
