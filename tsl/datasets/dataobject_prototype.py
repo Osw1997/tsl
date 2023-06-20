@@ -56,6 +56,10 @@ class CrimeMexicoCityTTL(DatetimeDataset):
                          similarity_score="distance",
                          temporal_aggregation="nearest",
                          name="CrimeMexicoCityTTL")
+
+        print("dist shape and dist: ")
+        print(dist.shape)
+        print(dist)
         # self.add_covariate('dist', dist, pattern='n n')
 
     @property
