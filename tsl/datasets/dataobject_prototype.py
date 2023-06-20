@@ -262,7 +262,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # Lets convert the dataframe into another dataframe but using right format
         df_raw = df.copy() # TO REMOVE: Only for testing purposes
         df = df.value_counts(["date", "nombre_alcaldia"]).unstack(fill_value=0)
-        df = df.set_index(pd.DatetimeIndex(dftc.index))
+        df = df.set_index(pd.DatetimeIndex(df.index))
         df = df.resample('D').sum()
 
         # return df, dist
