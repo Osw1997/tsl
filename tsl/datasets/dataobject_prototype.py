@@ -128,9 +128,10 @@ class CrimeMexicoCityTTL(DatetimeDataset):
 #             df, geometry = gpd.points_from_xy(df.lat, df.long),
 #             crs="EPSG:4326"
 #         )
-        df = gpd.GeoDataFrame(df, crs='EPSG:4326').to_crs('EPSG:3857')
+        # df = gpd.GeoDataFrame(df, crs='EPSG:4326').to_crs('EPSG:3857')
+        df = gpd.GeoDataFrame(df).to_crs('EPSG:3857')
 #         df = df.set_crs('EPSG:4326').to_crs('EPSG:3857')
-        dist = df.geometry.apply(lambda g: df.distance(g))
+        dist = df.geometry.apply(lambda g: df.centroid.distance(g.centroid))
         
         # # Con esta funcion obtenemos la distancia de cada denuncia con respecto de cada centroide
         # return mat
@@ -243,7 +244,9 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # Carga geometrias de alcaldias
         f = open("/content/tsl/tsl/datasets/raw_files_to_remove/alcaldias_cdmx.json", encoding='utf8')
         json_alcaldias = json.load(f)
-        geo_df = gpd.GeoDataFrame.from_features(json_alcaldias["features"])
+        # geo_df = gpd.GeoDataFrame.from_features(json_alcaldias["features"])
+        geo_df = gpd.GeoDataFrame.from_features(json_alcaldias["features"], crs='EPSG:4326')
+        geo_df = geo_df.sort_values("nomgeo")
         
         # # Encuentra su respectiva alcaldia y las respectivas coordenadas a evaluar
         # if aggregation_level == "alcaldia":
@@ -256,7 +259,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         df = df[valid_rows]
 
         # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
-        self.distance_matrix_crimes(df)
+        self.distance_matrix_crimes(geo_df)
 
         # Carga la matriz de distancias desde el archivo .npy
 #         path = os.path.join(self.root_dir, 'crime_cdmx_dist.npy')
