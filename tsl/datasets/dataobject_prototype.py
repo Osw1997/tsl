@@ -60,7 +60,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         print("dist shape and dist: ")
         print(dist.shape)
         print(dist)
-        # self.add_covariate('dist', dist, pattern='n n')
+        self.add_covariate('dist', dist, pattern='n n')
 
     @property
     def raw_file_names(self):
