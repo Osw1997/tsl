@@ -132,6 +132,9 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         df = gpd.GeoDataFrame(df).to_crs('EPSG:3857')
 #         df = df.set_crs('EPSG:4326').to_crs('EPSG:3857')
         dist = df.geometry.apply(lambda g: df.centroid.distance(g.centroid))
+
+        # Lets follow the same pattern that is in the other datasets
+        dist[dist == 0] = np.inf
         
         # # Con esta funcion obtenemos la distancia de cada denuncia con respecto de cada centroide
         # return mat
