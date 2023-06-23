@@ -268,15 +268,15 @@ class CrimeMexicoCityTTL(DatetimeDataset):
 #         path = os.path.join(self.root_dir, 'crime_cdmx_dist.npy')
         path = 'crime_cdmx_dist.npy'
         dist = np.load(path)
-
-        # Filter rows < 2017
-        df = df[df.index >= '2017-01-01']
         
         # Lets convert the dataframe into another dataframe but using right format
         df_raw = df.copy() # TO REMOVE: Only for testing purposes
         df = df.value_counts(["date", "nombre_alcaldia"]).unstack(fill_value=0)
         df = df.set_index(pd.DatetimeIndex(df.index))
-        df = df.resample('D').sum()        
+        df = df.resample('D').sum()
+
+        # Filter rows < 2017
+        df = df[df.index >= '2017-01-01']
 
         # return df, dist
         return df, dist, df_raw
