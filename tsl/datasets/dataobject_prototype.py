@@ -133,8 +133,8 @@ class CrimeMexicoCityTTL(DatetimeDataset):
 #         df = df.set_crs('EPSG:4326').to_crs('EPSG:3857')
         dist = df.geometry.apply(lambda g: df.centroid.distance(g.centroid))
 
-        # Lets follow the same pattern that is in the other datasets
-        dist[dist == 0] = np.inf
+        # # Lets follow the same pattern that is in the other datasets
+        # dist[dist == 0] = np.inf
         
         # # Con esta funcion obtenemos la distancia de cada denuncia con respecto de cada centroide
         # return mat
@@ -269,11 +269,14 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         path = 'crime_cdmx_dist.npy'
         dist = np.load(path)
 
+        # Filter rows < 2017
+        df = df[df.index >= '2017-01-01']
+        
         # Lets convert the dataframe into another dataframe but using right format
         df_raw = df.copy() # TO REMOVE: Only for testing purposes
         df = df.value_counts(["date", "nombre_alcaldia"]).unstack(fill_value=0)
         df = df.set_index(pd.DatetimeIndex(df.index))
-        df = df.resample('D').sum()
+        df = df.resample('D').sum()        
 
         # return df, dist
         return df, dist, df_raw
