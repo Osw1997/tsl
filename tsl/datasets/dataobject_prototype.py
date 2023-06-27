@@ -277,7 +277,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # To do the groupby
         df['date'] = df.index - pd.to_timedelta(7, unit='d')
         #calculate sum of values, grouped by week
-        df.groupby([pd.Grouper(key='date', freq='W')])['sales'].sum()
+        df = df.groupby([pd.Grouper(key='date', freq='W')]).sum()
         df = df.set_index(pd.DatetimeIndex(df['date']))
         
         #TODO: DELETE 'date' COLUMN
