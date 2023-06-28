@@ -278,13 +278,13 @@ class CrimeMexicoCityTTL(DatetimeDataset):
     def load(self, impute_zeros=True):
         # Aqui se va a tener que hacer un poco de pre-procesamiento 
         # para la tabla creada a partir de la consulta SPARQL.
-        processed_ttl_path = "/content/drive/MyDrive/tsl_datasets/processed_ttl.npy"
+        processed_ttl_path = "/content/drive/MyDrive/tsl_datasets/processed_ttl.csv"
         processed_ttl_distance_path = "/content/drive/MyDrive/tsl_datasets/processed_ttl_distance.npy"
         if os.path.isfile(processed_ttl_path) and os.path.isfile(processed_ttl_distance_path):
             print("Loading processed data from npy file")
             # Load multiindex dataframe 
             df = pd.read_csv(processed_ttl_path)
-            df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+            # df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
             # Load distance matrix
             dist = np.load(processed_ttl_distance_path)
         else:
