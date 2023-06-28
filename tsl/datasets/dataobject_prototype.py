@@ -290,7 +290,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         else:
             print("Processing TTL and matrix distance")
             df, dist = self.load_raw() # TO REMOVE: Only for testing purposes
-            df.to_csv(processed_ttl_path, index=False)            
+            df.to_csv(processed_ttl_path, index=True)            
             np.save(processed_ttl_distance_path, dist)
             
         # df, dist = self.load_raw()
