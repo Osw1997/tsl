@@ -7,6 +7,7 @@ import kglab
 import json
 import geopandas as gpd
 from shapely.geometry import Polygon, LineString, Point, MultiPolygon
+from shapely import wkt
 
 from tsl import logger
 
@@ -124,11 +125,6 @@ class CrimeMexicoCityTTL(DatetimeDataset):
     #### La matriz de sitancias entre denuncias y denuncias denuncias las podemos calcular asi
     def distance_matrix_crimes(self, df):
         #cambiamos la proyección para distancias en metros
-#         df = gpd.GeoDataFrame(
-#             df, geometry = gpd.points_from_xy(df.lat, df.long),
-#             crs="EPSG:4326"
-#         )
-        # df = gpd.GeoDataFrame(df, crs='EPSG:4326').to_crs('EPSG:3857')
         df = gpd.GeoDataFrame(df).to_crs('EPSG:3857')
 #         df = df.set_crs('EPSG:4326').to_crs('EPSG:3857')
         dist = df.geometry.apply(lambda g: df.centroid.distance(g.centroid))
@@ -136,36 +132,17 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # # Lets follow the same pattern that is in the other datasets
         # dist[dist == 0] = np.inf
         
-        # # Con esta funcion obtenemos la distancia de cada denuncia con respecto de cada centroide
-        # return mat
-        
         # Save to built directory (Update in the class definition)
         # path = os.path.join(self.root_dir, 'metr_la_dist.npy')
         path = "crime_cdmx_dist.npy"
         np.save(path, dist)
 
-
-    def load_raw(self):
-        # Considero que aqui se va a tener que cargar el TTL y hacer
-        # la consulta SPARQL para luego cargarlo a este objeto.
-#         self.maybe_build()
-#         # load traffic data
-#         traffic_path = os.path.join(self.root_dir, 'metr_la.h5')
-#         df = pd.read_hdf(traffic_path)
-#         # add missing values
-#         datetime_idx = sorted(df.index)
-#         date_range = pd.date_range(datetime_idx[0],
-#                                    datetime_idx[-1],
-#                                    freq='5T')
-#         df = df.reindex(index=date_range)
-#         # load distance matrix
-#         path = os.path.join(self.root_dir, 'metr_la_dist.npy')
-#         dist = np.load(path)
+    def load_ttl_sparql(self):
         NAMESPACES = {
             "wtm":  "http://purl.org/heals/food/",
             "ind":  "http://purl.org/heals/ingredient/",
             "recipe":  "https://www.food.com/recipe/",
-
+    
             "crime": "http://localhost/ontology2#",
             "cube": "http://purl.org/linked-data/cube#",
             "geo": "http://www.w3.org/2003/01/geo/wgs84_pos#",
@@ -175,14 +152,14 @@ class CrimeMexicoCityTTL(DatetimeDataset):
             "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
             "xsd": "http://www.w3.org/2001/XMLSchema#"
         }
-
+    
         kg = kglab.KnowledgeGraph(namespaces = NAMESPACES)
         print(f"--> CURRENT WORK DIRECTORY: [{os.getcwd()}]")
         _ = kg.load_rdf("/content/tsl/tsl/datasets/raw_files_to_remove/testind3.ttl")
         
         print("CURRENT NAMESPASE: ")
         kg.describe_ns()
-
+    
         # Buscamos tener id, delito, atributos, coordenadas y fecha en el DF
         # A clasificar: crime:tieneCategoria
         # Atributo: crime:contiene, crime:edad, crime:genero
@@ -194,7 +171,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
                 ?uri crime:tieneFecha ?date .
                 ?uri geo1:lat ?lat .
                 ?uri geo1:long ?long .
-
+    
                 ?uri crime:contiene ?atribute .
             }
         """
@@ -206,7 +183,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
                 ?uri crime:tieneFecha ?date .
                 ?uri geo1:lat ?lat .
                 ?uri geo1:long ?long .
-
+    
                 ?uri crime:edad ?atribute .
             }
         """
@@ -218,15 +195,15 @@ class CrimeMexicoCityTTL(DatetimeDataset):
                 ?uri crime:tieneFecha ?date .
                 ?uri geo1:lat ?lat .
                 ?uri geo1:long ?long .
-
+    
                 ?uri crime:genero ?atribute
             }
         """
-
+    
         df_contiene = kg.query_as_df(sparql=sparql_contiene)
         df_edad = kg.query_as_df(sparql=sparql_edad)
         df_genero = kg.query_as_df(sparql=sparql_genero)
-
+    
         df_atributes = pd.concat([df_contiene, df_edad, df_genero], ignore_index=True)
         df_atributes = df_atributes.groupby(['uri', 'date', 'type', 'long', 'lat'])['atribute'].apply(list).reset_index(name='atribute')
         # df_atributes
@@ -244,6 +221,18 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # Se le crea la geometria "Point" a cada crimen segun su longitud/latitud
         df["geometry"] = df[["long", "lat"]].T.apply(Point)
         
+        return df 
+
+    def load_raw(self):
+        path_ttl_sparql = "/content/drive/MyDrive/tsl_datasets/processed_ttl_sparql.csv"
+        if os.path.isfile(path_ttl_sparql):
+            df = pd.read_csv(path_ttl_sparql)
+            # Convert "geometry" column <str> to <geopandas>
+            df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+        else:
+            df = self.load_ttl_sparql()
+            df.to_csv(path_ttl_sparql, index=False)
+            
         # Carga geometrias de alcaldias
         f = open("/content/tsl/tsl/datasets/raw_files_to_remove/alcaldias_cdmx.json", encoding='utf8')
         json_alcaldias = json.load(f)
@@ -274,31 +263,42 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         df = df.value_counts(["date", "nombre_alcaldia"]).unstack(fill_value=0)
         df = df.set_index(pd.DatetimeIndex(df.index))
         df = df.resample('D').sum()
-        # To do the groupby
-        df['date'] = df.index - pd.to_timedelta(7, unit='d')
-        #calculate sum of values, grouped by week
-        df = df.groupby([pd.Grouper(key='date', freq='W')]).sum()
-        df = df.set_index(pd.DatetimeIndex(df['date']))
         
-        #TODO: DELETE 'date' COLUMN
+        # Agregacion semanal
+        df['date'] = df.index - pd.to_timedelta(7, unit='d')
+        df = df.groupby([pd.Grouper(key='date', freq='W')]).sum()
         
         # Filter rows < 2017
         df = df[df.index >= '2017-01-01']
 
-        # return df, dist
-        return df, dist, df_raw
+        return df, dist
+        # return df, dist, df_raw
 
     def load(self, impute_zeros=True):
         # Aqui se va a tener que hacer un poco de pre-procesamiento 
         # para la tabla creada a partir de la consulta SPARQL.
-        df, dist, df_raw = self.load_raw() # TO REMOVE: Only for testing purposes
+        processed_ttl_path = "/content/drive/MyDrive/tsl_datasets/processed_ttl.npy"
+        processed_ttl_distance_path = "/content/drive/MyDrive/tsl_datasets/processed_ttl_distance.npy"
+        if os.path.isfile(processed_ttl_path) and os.path.isfile(processed_ttl_distance_path):
+            print("Loading processed data from npy file")
+            # Load multiindex dataframe 
+            df = pd.read_csv(processed_ttl_path)
+            df["geometry"] = gpd.GeoSeries.from_wkt(df["geometry"])
+            # Load distance matrix
+            dist = np.load(processed_ttl_distance_path)
+        else:
+            print("Processing TTL and matrix distance")
+            df, dist = self.load_raw() # TO REMOVE: Only for testing purposes
+            df.to_csv(processed_ttl_path, index=False)            
+            np.save(processed_ttl_distance_path, dist)
+            
         # df, dist = self.load_raw()
         mask = (df.values != 0.).astype('uint8')
         if impute_zeros:
             df = df.replace(to_replace=0., method='ffill')
         
-        return df, dist, mask, df_raw # TO REMOVE: Only for testing purposes
-        # return df, dist, mask
+        # return df, dist, mask, df_raw # TO REMOVE: Only for testing purposes
+        return df, dist, mask
 
     # TODO:
     # UNA VEZ QUE PANCHO ME HAYA PASADO LOS DATAFRAMES
