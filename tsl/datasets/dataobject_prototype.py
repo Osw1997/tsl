@@ -45,9 +45,10 @@ class CrimeMexicoCityTTL(DatetimeDataset):
 
     similarity_options = {'distance'} # O que vamos a usar como medida de similitud para enlazar los nodos?
 
-    def __init__(self, root=None, impute_zeros=True, freq=None):
+    def __init__(self, root=None, impute_zeros=True, freq=None, geo_detail="alcaldia"):
         # set root path
         self.root = root
+        self.geo_detail = geo_detail
         # load dataset
         # df, dist, mask, df_raw = self.load(impute_zeros=impute_zeros)
         df, dist, mask = self.load(impute_zeros=impute_zeros)
@@ -235,10 +236,25 @@ class CrimeMexicoCityTTL(DatetimeDataset):
             df.to_csv(path_ttl_sparql, index=False)
             
         # Carga geometrias de alcaldias
-        f = open("/content/tsl/tsl/datasets/raw_files_to_remove/alcaldias_cdmx.json", encoding='utf8')
+        if self.geo_detail = 'alcaldia':
+            path_geojson = "/content/tsl/tsl/datasets/raw_files_to_remove/alcaldias_cdmx.json"
+        elif self.geo_detail = 'ageb':
+            path_geojson = "/content/tsl/tsl/datasets/raw_files_to_remove/agebs.json"
+        f = open(path_geojson, encoding='utf8')
+        
+        
         json_alcaldias = json.load(f)
         # geo_df = gpd.GeoDataFrame.from_features(json_alcaldias["features"])
         geo_df = gpd.GeoDataFrame.from_features(json_alcaldias["features"], crs='EPSG:4326')
+
+        # TO REMOVE ONCE JSON HAS TE APPROPRIATE FORMAT (agebs)
+        # ========================================================================================
+        # ========================================================================================
+        if self.geo_detail = 'ageb':
+            geo_df["nomgeo"] = geo_df["id"] + "_" + geo_df["cve_ageb"]
+            del geo_df["id"], geo_df["cve_ageb"]
+        # ========================================================================================
+        # ========================================================================================
         geo_df = geo_df.sort_values("nomgeo")
         
         # # Encuentra su respectiva alcaldia y las respectivas coordenadas a evaluar
