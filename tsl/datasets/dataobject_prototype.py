@@ -236,9 +236,9 @@ class CrimeMexicoCityTTL(DatetimeDataset):
             df.to_csv(path_ttl_sparql, index=False)
             
         # Carga geometrias de alcaldias
-        if self.geo_detail = 'alcaldia':
+        if self.geo_detail == 'alcaldia':
             path_geojson = "/content/tsl/tsl/datasets/raw_files_to_remove/alcaldias_cdmx.json"
-        elif self.geo_detail = 'ageb':
+        elif self.geo_detail == 'ageb':
             path_geojson = "/content/tsl/tsl/datasets/raw_files_to_remove/agebs.json"
         f = open(path_geojson, encoding='utf8')
         
@@ -250,7 +250,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # TO REMOVE ONCE JSON HAS TE APPROPRIATE FORMAT (agebs)
         # ========================================================================================
         # ========================================================================================
-        if self.geo_detail = 'ageb':
+        if self.geo_detail == 'ageb':
             geo_df["nomgeo"] = geo_df["id"] + "_" + geo_df["cve_ageb"]
             del geo_df["id"], geo_df["cve_ageb"]
         # ========================================================================================
