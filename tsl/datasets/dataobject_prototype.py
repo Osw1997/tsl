@@ -266,10 +266,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # Let's remove empty lat,long/Invalid rows
         valid_rows = (df["index_alcaldia"] != -1)
         df = df[valid_rows]
-
-        # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
-        self.distance_matrix_crimes(geo_df)
-
+        
         # Carga la matriz de distancias desde el archivo .npy
 #         path = os.path.join(self.root_dir, 'crime_cdmx_dist.npy')
         path = 'crime_cdmx_dist.npy'
@@ -284,6 +281,18 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # Agregacion semanal
         df['date'] = df.index - pd.to_timedelta(7, unit='d')
         df = df.groupby([pd.Grouper(key='date', freq='W')]).sum()
+
+        # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
+        # Debido a que no todos las geometrias pueden ser usadas, existira una
+        # incogruencia entre la matriz de distancias respecto a las columnas
+        # del dataframe ocasionando un error al agregar la matriz de covarianza
+        # por lo que se filtran el dataframe de geometrias con las geometrias que 
+        # se utilizaron.
+        used_geometries = list(df.columns.get_level_values(0))
+        geo_df = geo_df[geo_df["nomgeo"].isin(used_geometries)]
+        # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
+        # una vez filtradas las geometrias necesarias.
+        self.distance_matrix_crimes(geo_df)
         
         # Filter rows < 2017
         df = df[df.index >= '2017-01-01']
