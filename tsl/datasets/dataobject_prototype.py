@@ -267,11 +267,6 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         valid_rows = (df["index_alcaldia"] != -1)
         df = df[valid_rows]
         
-        # Carga la matriz de distancias desde el archivo .npy
-#         path = os.path.join(self.root_dir, 'crime_cdmx_dist.npy')
-        path = 'crime_cdmx_dist.npy'
-        dist = np.load(path)
-        
         # Lets convert the dataframe into another dataframe but using right format
         df_raw = df.copy() # TO REMOVE: Only for testing purposes
         df = df.value_counts(["date", "nombre_alcaldia"]).unstack(fill_value=0)
@@ -293,7 +288,11 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
         # una vez filtradas las geometrias necesarias.
         self.distance_matrix_crimes(geo_df)
-        
+        # Carga la matriz de distancias desde el archivo .npy
+        # path = os.path.join(self.root_dir, 'crime_cdmx_dist.npy')
+        path = 'crime_cdmx_dist.npy'
+        dist = np.load(path)
+
         # Filter rows < 2017
         df = df[df.index >= '2017-01-01']
 
