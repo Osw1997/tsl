@@ -274,8 +274,10 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         df = df.resample('D').sum()
         
         # Agregacion semanal
-        df['date'] = df.index - pd.to_timedelta(7, unit='d')
-        df = df.groupby([pd.Grouper(key='date', freq='W')]).sum()
+        # df['date'] = df.index - pd.to_timedelta(7, unit='d')
+        # df = df.groupby([pd.Grouper(key='date', freq='W')]).sum()        
+        df['date'] = df.index - pd.DateOffset(months=1)
+        df = df.groupby([pd.Grouper(key='date', freq='M')]).sum()
 
         # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
         # Debido a que no todos las geometrias pueden ser usadas, existira una
