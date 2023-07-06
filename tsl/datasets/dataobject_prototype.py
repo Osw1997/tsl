@@ -296,9 +296,11 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # se utilizaron.
         used_geometries = list(df.columns.get_level_values(0))
         print(f"USed geometries: {used_geometries}")
-        
-        geo_df = geo_df[geo_df["nomgeo"].isin(used_geometries)]
+
         geo_df.index = geo_df["nomgeo"]
+        geo_df = geo_df[geo_df["nomgeo"].isin(used_geometries)]
+        geo_df = geo_df.reindex(used_geometries)
+        
         # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
         # una vez filtradas las geometrias necesarias.
         self.distance_matrix_crimes(geo_df)
