@@ -131,6 +131,9 @@ class CrimeMexicoCityTTL(DatetimeDataset):
 #         df = df.set_crs('EPSG:4326').to_crs('EPSG:3857')
         dist = df.geometry.apply(lambda g: df.centroid.distance(g.centroid))
 
+        # FOR TESTING PURPOSES
+        dist.to_csv("/content/tsl/tsl/datasets/raw_files_to_remove/dist_csv.csv")
+
         # # Lets follow the same pattern that is in the other datasets
         # dist[dist == 0] = np.inf
         
