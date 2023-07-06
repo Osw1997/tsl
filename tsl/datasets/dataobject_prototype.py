@@ -287,6 +287,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         sorted_columns = df.sum().sort_values(ascending=False, inplace=False)
         # df.loc[:,s.index]
         df = df[sorted_columns.index[:1000]]
+        df.sort_index(inplace=True)
 
         # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
         # Debido a que no todos las geometrias pueden ser usadas, existira una
@@ -295,6 +296,8 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # por lo que se filtran el dataframe de geometrias con las geometrias que 
         # se utilizaron.
         used_geometries = list(df.columns.get_level_values(0))
+        print(f"USed geometries: {used_geometries}")
+        
         geo_df = geo_df[geo_df["nomgeo"].isin(used_geometries)]
         # Con esta funcion obtenemos la distancia de cada denuncia con respecto a cada denuncia
         # una vez filtradas las geometrias necesarias.
