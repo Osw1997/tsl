@@ -40,33 +40,35 @@ class CrimeMexicoCityTTL(DatetimeDataset):
 
     """
     url = "https://drive.switch.ch/index.php/s/Z8cKHAVyiDqkzaG/download"
-
-    # Check if desired crime to process is in dataset
-    available_crimes = ['<http://localhost/FRAUDE>',
-       '<http://localhost/VIOLENCIA_FAMILIAR>',
-       '<http://localhost/ROBO_DE_OBJETOS>',
-       '<http://localhost/ROBO_DE_OBJETOS_DEL_INTERIOR_DE_UN_VEHICULO>',
-       '<http://localhost/ROBO_A_TRANSEUNTE_EN_VIA_PUBLICA_CON_VIOLENCIA>',
-       '<http://localhost/ROBO_DE_ACCESORIOS_DE_AUTO>',
-       '<http://localhost/ABUSO_DE_CONFIANZA>',
-       '<http://localhost/ROBO_A_NEGOCIO_SIN_VIOLENCIA_POR_FARDEROS_(TIENDAS_DE_AUTOSERVICIO)>',
-       '<http://localhost/AMENAZAS>',
-       '<http://localhost/USURPACIÓN_DE_IDENTIDAD>'
-    ]
-    self.crime_dataset = crime_dataset
-    self.crime = crime_dataset.split("/")[-1].split(">")[0]
-    if self.crime_dataset not in (available_crimes):
-        raise ValueError('Desired crime not in list: "%s"' % (self.crime_dataset))
-
-    print(f">>> Crime to process: {self.crime_dataset}")
+    
     print(f">>> CURRENT WORK DIRECTORY: [{os.getcwd()}]")
 
     similarity_options = {'distance'} # O que vamos a usar como medida de similitud para enlazar los nodos?
 
-    def __init__(self, root=None, impute_zeros=True, freq=None, geo_detail="alcaldia"):
+    def __init__(self, root=None, impute_zeros=True, freq=None, geo_detail="alcaldia", crime_dataset):
         # set root path
         self.root = root
         self.geo_detail = geo_detail
+
+        # Check if desired crime to process is in dataset
+        available_crimes = ['<http://localhost/FRAUDE>',
+           '<http://localhost/VIOLENCIA_FAMILIAR>',
+           '<http://localhost/ROBO_DE_OBJETOS>',
+           '<http://localhost/ROBO_DE_OBJETOS_DEL_INTERIOR_DE_UN_VEHICULO>',
+           '<http://localhost/ROBO_A_TRANSEUNTE_EN_VIA_PUBLICA_CON_VIOLENCIA>',
+           '<http://localhost/ROBO_DE_ACCESORIOS_DE_AUTO>',
+           '<http://localhost/ABUSO_DE_CONFIANZA>',
+           '<http://localhost/ROBO_A_NEGOCIO_SIN_VIOLENCIA_POR_FARDEROS_(TIENDAS_DE_AUTOSERVICIO)>',
+           '<http://localhost/AMENAZAS>',
+           '<http://localhost/USURPACIÓN_DE_IDENTIDAD>'
+        ]
+        self.crime_dataset = crime_dataset
+        self.crime = crime_dataset.split("/")[-1].split(">")[0]
+        if self.crime_dataset not in (available_crimes):
+            raise ValueError('Desired crime not in list: "%s"' % (self.crime_dataset))
+    
+        print(f">>> Crime to process: {self.crime_dataset}")
+        
         # load dataset
         # df, dist, mask, df_raw = self.load(impute_zeros=impute_zeros)
         df, dist, mask = self.load(impute_zeros=impute_zeros)
