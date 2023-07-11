@@ -178,7 +178,8 @@ class CrimeMexicoCityTTL(DatetimeDataset):
     
         kg = kglab.KnowledgeGraph(namespaces = NAMESPACES)
         print(f"--> CURRENT WORK DIRECTORY: [{os.getcwd()}]")
-        _ = kg.load_rdf("/content/tsl/tsl/datasets/raw_files_to_remove/testind3.ttl")
+        # _ = kg.load_rdf("/content/tsl/tsl/datasets/raw_files_to_remove/testind3.ttl")
+        _ = kg.load_rdf("/content/tsl/tsl/datasets/raw_files_to_remove/testindtop10.ttl")
         
         print("CURRENT NAMESPASE: ")
         kg.describe_ns()
