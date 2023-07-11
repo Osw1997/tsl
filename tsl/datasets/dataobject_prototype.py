@@ -45,7 +45,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
 
     similarity_options = {'distance'} # O que vamos a usar como medida de similitud para enlazar los nodos?
 
-    def __init__(self, root=None, impute_zeros=True, freq=None, geo_detail="alcaldia", crime_dataset):
+    def __init__(self, root=None, impute_zeros=True, freq=None, geo_detail="alcaldia", crime_dataset=None):
         # set root path
         self.root = root
         self.geo_detail = geo_detail
