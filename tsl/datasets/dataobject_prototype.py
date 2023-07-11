@@ -41,6 +41,24 @@ class CrimeMexicoCityTTL(DatetimeDataset):
     """
     url = "https://drive.switch.ch/index.php/s/Z8cKHAVyiDqkzaG/download"
 
+    # Check if desired crime to process is in dataset
+    available_crimes = ['<http://localhost/FRAUDE>',
+       '<http://localhost/VIOLENCIA_FAMILIAR>',
+       '<http://localhost/ROBO_DE_OBJETOS>',
+       '<http://localhost/ROBO_DE_OBJETOS_DEL_INTERIOR_DE_UN_VEHICULO>',
+       '<http://localhost/ROBO_A_TRANSEUNTE_EN_VIA_PUBLICA_CON_VIOLENCIA>',
+       '<http://localhost/ROBO_DE_ACCESORIOS_DE_AUTO>',
+       '<http://localhost/ABUSO_DE_CONFIANZA>',
+       '<http://localhost/ROBO_A_NEGOCIO_SIN_VIOLENCIA_POR_FARDEROS_(TIENDAS_DE_AUTOSERVICIO)>',
+       '<http://localhost/AMENAZAS>',
+       '<http://localhost/USURPACIÓN_DE_IDENTIDAD>'
+    ]
+    self.crime_dataset = crime_dataset
+    self.crime = crime_dataset.split("/")[-1].split(">")[0]
+    if self.crime_dataset not in (available_crimes):
+        raise ValueError('Desired crime not in list: "%s"' % (self.crime_dataset))
+
+    print(f">>> Crime to process: {self.crime_dataset}")
     print(f">>> CURRENT WORK DIRECTORY: [{os.getcwd()}]")
 
     similarity_options = {'distance'} # O que vamos a usar como medida de similitud para enlazar los nodos?
@@ -168,7 +186,19 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         # Buscamos tener id, delito, atributos, coordenadas y fecha en el DF
         # A clasificar: crime:tieneCategoria
         # Atributo: crime:contiene, crime:edad, crime:genero
-        sparql_contiene = """
+        # sparql_contiene = """
+        #     SELECT distinct *
+        #     WHERE {
+        #         ?uri a crime:obs .
+        #         ?uri a ?type .   
+        #         ?uri crime:tieneFecha ?date .
+        #         ?uri geo1:lat ?lat .
+        #         ?uri geo1:long ?long .
+    
+        #         ?uri crime:contiene ?atribute .
+        #     }
+        # """
+        sparql_categoria = """
             SELECT distinct *
             WHERE {
                 ?uri a crime:obs .
@@ -177,7 +207,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
                 ?uri geo1:lat ?lat .
                 ?uri geo1:long ?long .
     
-                ?uri crime:contiene ?atribute .
+                ?uri crime:tieneCategoria ?atribute .
             }
         """
         sparql_edad = """
@@ -205,19 +235,28 @@ class CrimeMexicoCityTTL(DatetimeDataset):
             }
         """
     
-        df_contiene = kg.query_as_df(sparql=sparql_contiene)
+        # df_contiene = kg.query_as_df(sparql=sparql_contiene)
+        df_contiene = kg.query_as_df(sparql=sparql_categoria)
         df_edad = kg.query_as_df(sparql=sparql_edad)
         df_genero = kg.query_as_df(sparql=sparql_genero)
     
-        df_atributes = pd.concat([df_contiene, df_edad, df_genero], ignore_index=True)
+        # df_atributes = pd.concat([df_contiene, df_edad, df_genero], ignore_index=True)
+        df_atributes = pd.concat([df_categoria, df_edad, df_genero], ignore_index=True)
         df_atributes = df_atributes.groupby(['uri', 'date', 'type', 'long', 'lat'])['atribute'].apply(list).reset_index(name='atribute')
         # df_atributes
         
         # Luego obtengamos el uri, delito a clasificar
+        # sparql_crimes = """
+        #     SELECT distinct *
+        #     WHERE {
+        #         ?uri crime:tieneCategoria ?crime .
+        #     }
+        # """
         sparql_crimes = """
             SELECT distinct *
             WHERE {
-                ?uri crime:tieneCategoria ?crime .
+                ?uri crime:contiene """ + self.crime_dataset + """ .
+                ?uri crime:contiene ?crime .
             }
         """
         df_crimes = kg.query_as_df(sparql=sparql_crimes)
@@ -229,7 +268,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         return df 
 
     def load_raw(self):
-        path_ttl_sparql = "/content/drive/MyDrive/tsl_datasets/processed_ttl_sparql.csv"
+        path_ttl_sparql = f"/content/drive/MyDrive/tsl_datasets/processed_ttl_sparql_{self.crime}.csv"
         if os.path.isfile(path_ttl_sparql):
             df = pd.read_csv(path_ttl_sparql)
             # Convert "geometry" column <str> to <geopandas>
@@ -318,8 +357,8 @@ class CrimeMexicoCityTTL(DatetimeDataset):
     def load(self, impute_zeros=True):
         # Aqui se va a tener que hacer un poco de pre-procesamiento 
         # para la tabla creada a partir de la consulta SPARQL.
-        processed_ttl_path = "/content/drive/MyDrive/tsl_datasets/processed_ttl.csv"
-        processed_ttl_distance_path = "/content/drive/MyDrive/tsl_datasets/processed_ttl_distance.npy"
+        processed_ttl_path = f"/content/drive/MyDrive/tsl_datasets/processed_ttl_{self.crime}.csv"
+        processed_ttl_distance_path = f"/content/drive/MyDrive/tsl_datasets/processed_ttl_distance_{self.crime}.npy"
         if os.path.isfile(processed_ttl_path) and os.path.isfile(processed_ttl_distance_path):
             print("Loading processed data from npy file")
             # Load multiindex dataframe 
