@@ -239,7 +239,7 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         """
     
         # df_contiene = kg.query_as_df(sparql=sparql_contiene)
-        df_contiene = kg.query_as_df(sparql=sparql_categoria)
+        df_categoria = kg.query_as_df(sparql=sparql_categoria)
         df_edad = kg.query_as_df(sparql=sparql_edad)
         df_genero = kg.query_as_df(sparql=sparql_genero)
     
