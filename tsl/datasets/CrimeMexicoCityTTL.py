@@ -52,7 +52,12 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         """
         # set root path
         self.root = root
-        self.geo_detail = geo_detail
+        
+        list_detail = ["alcaldia", "ageb"]
+        if geo_detail.lower() not in list_detail:
+            raise ValueError('Desired crime not in list: "%s"' % (geo_detail))
+            
+        self.geo_detail = geo_detail.lower()
         
         df, dist, mask = self.load(impute_zeros=impute_zeros)
         super().__init__(target=df,
@@ -117,14 +122,14 @@ class CrimeMexicoCityTTL(DatetimeDataset):
 
     def load(self, impute_zeros=True):
         
-        # For "alcaldia"
-        df = pd.read_csv('https://drive.google.com/uc?id=1-870PZIVuo-sisabqJiXB3P5yGAQNdWJ')
-        file = np.DataSource().open('https://drive.google.com/uc?id=1--UgH91lTa01GDNyu_nJonznaDbYSI-K')
-        dist = np.load(file.name)
-        # For AGEB (Iztapalapa)
-        df = pd.read_csv('https://drive.google.com/uc?id=1-CnS8-dxlK2LlSdHc6pFtyV6if9ANcP9')
-        file = np.DataSource().open('https://drive.google.com/uc?id=1-4ZHYv49gj0DCck7o207kmI6_7jtC4Eb')
-        dist = np.load(file.name)
+        if self.geo_detail == 'alcaldia':
+            df = pd.read_csv('https://drive.google.com/uc?id=1-870PZIVuo-sisabqJiXB3P5yGAQNdWJ')
+            file = np.DataSource().open('https://drive.google.com/uc?id=1--UgH91lTa01GDNyu_nJonznaDbYSI-K')
+            dist = np.load(file.name)
+        elif self.geo_detail == 'ageb':
+            df = pd.read_csv('https://drive.google.com/uc?id=1-CnS8-dxlK2LlSdHc6pFtyV6if9ANcP9')
+            file = np.DataSource().open('https://drive.google.com/uc?id=1-4ZHYv49gj0DCck7o207kmI6_7jtC4Eb')
+            dist = np.load(file.name)
             
         mask = (df.values != 0.).astype('uint8')
         if impute_zeros:
