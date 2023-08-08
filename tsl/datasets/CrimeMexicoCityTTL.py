@@ -54,7 +54,6 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         self.root = root
         self.geo_detail = geo_detail
         
-        self.crime_dataset = crime_dataset
         df, dist, mask = self.load(impute_zeros=impute_zeros)
         super().__init__(target=df,
                          mask=mask,
