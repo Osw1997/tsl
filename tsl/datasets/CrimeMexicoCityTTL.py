@@ -124,11 +124,13 @@ class CrimeMexicoCityTTL(DatetimeDataset):
         
         if self.geo_detail == 'alcaldia':
             df = pd.read_csv('https://drive.google.com/uc?id=1-870PZIVuo-sisabqJiXB3P5yGAQNdWJ')
+            df['date'] = pd.to_datetime(df['date'])
             df.set_index('date', inplace=True)
             file = np.DataSource().open('https://drive.google.com/uc?id=1--UgH91lTa01GDNyu_nJonznaDbYSI-K')
             dist = np.load(file.name)
         elif self.geo_detail == 'ageb':
             df = pd.read_csv('https://drive.google.com/uc?id=1-CnS8-dxlK2LlSdHc6pFtyV6if9ANcP9')
+            df['date'] = pd.to_datetime(df['date'])
             df.set_index('date', inplace=True)
             file = np.DataSource().open('https://drive.google.com/uc?id=1-4ZHYv49gj0DCck7o207kmI6_7jtC4Eb')
             dist = np.load(file.name)
