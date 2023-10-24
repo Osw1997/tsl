@@ -134,6 +134,30 @@ class CrimeMexicoCityTTL(DatetimeDataset):
             df.set_index('date', inplace=True)
             file = np.DataSource().open('https://drive.google.com/uc?id=1-4ZHYv49gj0DCck7o207kmI6_7jtC4Eb')
             dist = np.load(file.name)
+        elif self.geo_detail == 'alcaldia_femenina':
+            df = pd.read_csv('https://drive.google.com/uc?id=1buvfaT1_51Eor6V_xACDkIXMaQWNe7xd')
+            df['date'] = pd.to_datetime(df['date'])
+            df.set_index('date', inplace=True)
+            file = np.DataSource().open('https://drive.google.com/uc?id=1-BBnrv1dfV1vobfToqaMYtAtgYIGdiUX')
+            dist = np.load(file.name)
+        elif self.geo_detail == 'alcaldia_masculina':
+            df = pd.read_csv('https://drive.google.com/uc?id=1-5qKj5igmJmH2ubNN7IGTevS3wUx_jbw')
+            df['date'] = pd.to_datetime(df['date'])
+            df.set_index('date', inplace=True)
+            file = np.DataSource().open('https://drive.google.com/uc?id=1-1xwmPnl7x43IjRdjKEr5inpVYAU4gKT')
+            dist = np.load(file.name)
+        elif self.geo_detail == 'ageb_femenina':
+            df = pd.read_csv('https://drive.google.com/uc?id=1-IKeHkP1id317Tvv_pVBZNSt9kmGeNjF')
+            df['date'] = pd.to_datetime(df['date'])
+            df.set_index('date', inplace=True)
+            file = np.DataSource().open('https://drive.google.com/uc?id=1-HzeNPohSTkOtAVVGUy-hyoeDKd2o2U1')
+            dist = np.load(file.name)
+        elif self.geo_detail == 'ageb_masculina':
+            df = pd.read_csv('https://drive.google.com/uc?id=1-G8-nl7SXM6OwGNdI1sD3fHjvyL6Yqpa')
+            df['date'] = pd.to_datetime(df['date'])
+            df.set_index('date', inplace=True)
+            file = np.DataSource().open('https://drive.google.com/uc?id=1-FXQBe9eZHxcGyUBGRXdUYSxGL6PM2yH')
+            dist = np.load(file.name)
             
         mask = (df.values != 0.).astype('uint8')
         if impute_zeros:
