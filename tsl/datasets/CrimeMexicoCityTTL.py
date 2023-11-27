@@ -48,12 +48,12 @@ class CrimeMexicoCityTTL(DatetimeDataset):
     def __init__(self, root=None, impute_zeros=True, freq=None, geo_detail="alcaldia"):
         """
             Function that loads preprocesed TTL files into TSL
-            geo_detail: ["alcaldia", "ageb", "alcaldia_femenina", "alcaldia_masculina", "ageb_femenina", "ageb_masculina"]
+            geo_detail: ["alcaldia", "ageb", "alcaldia_femenina", "alcaldia_masculina", "ageb_femenina", "ageb_masculina", "alcaldia_nonZeroEntries", "alcaldia_femenina_nonZeroEntries", "alcaldia_masculina_nonZeroEntries"]
         """
         # set root path
         self.root = root
         
-        list_detail = ["alcaldia", "ageb", "alcaldia_femenina", "alcaldia_masculina", "ageb_femenina", "ageb_masculina"]
+        list_detail = ["alcaldia", "ageb", "alcaldia_femenina", "alcaldia_masculina", "ageb_femenina", "ageb_masculina", "alcaldia_nonZeroEntries", "alcaldia_femenina_nonZeroEntries", "alcaldia_masculina_nonZeroEntries"]
         if geo_detail.lower() not in list_detail:
             raise ValueError('Desired crime not in list: "%s"' % (geo_detail))
             
@@ -157,6 +157,25 @@ class CrimeMexicoCityTTL(DatetimeDataset):
             df['date'] = pd.to_datetime(df['date'])
             df.set_index('date', inplace=True)
             file = np.DataSource().open('https://drive.google.com/uc?id=1-FXQBe9eZHxcGyUBGRXdUYSxGL6PM2yH')
+            dist = np.load(file.name)
+
+        elif self.geo_detail == 'alcaldia_nonZeroEntries':
+            df = pd.read_csv('https://drive.google.com/uc?id=1--5d2KjUOcEnZGRzv_Pisxx66PtJ3zUL')
+            df['date'] = pd.to_datetime(df['date'])
+            df.set_index('date', inplace=True)
+            file = np.DataSource().open('https://drive.google.com/uc?id=1-7T8HJ062JdnD7yfl3OUY0us2hp3-0ua')
+            dist = np.load(file.name)
+        elif self.geo_detail == 'alcaldia_femenina_nonZeroEntries':
+            df = pd.read_csv('https://drive.google.com/uc?id=1-Coc57nfnihAV61S48Q-wAfegh1_L6Wd')
+            df['date'] = pd.to_datetime(df['date'])
+            df.set_index('date', inplace=True)
+            file = np.DataSource().open('https://drive.google.com/uc?id=1-T7QTiRV80eS71wIc6NzFOhDGZ3pd5eP')
+            dist = np.load(file.name)
+        elif self.geo_detail == 'alcaldia_masculina_nonZeroEntries':
+            df = pd.read_csv('https://drive.google.com/uc?id=1-SjwBsAIqVTRi-Dt4GqIlHY7EhkmGObn')
+            df['date'] = pd.to_datetime(df['date'])
+            df.set_index('date', inplace=True)
+            file = np.DataSource().open('https://drive.google.com/uc?id=1-MCOIb4W92EabmF5jxrS76wPruwOf7dd')
             dist = np.load(file.name)
             
         mask = (df.values != 0.).astype('uint8')
