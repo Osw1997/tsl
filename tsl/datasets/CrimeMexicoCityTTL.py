@@ -48,12 +48,12 @@ class CrimeMexicoCityTTL(DatetimeDataset):
     def __init__(self, root=None, impute_zeros=True, freq=None, geo_detail="alcaldia"):
         """
             Function that loads preprocesed TTL files into TSL
-            geo_detail: ["alcaldia", "ageb", "alcaldia_femenina", "alcaldia_masculina", "ageb_femenina", "ageb_masculina", "alcaldia_nonZeroEntries", "alcaldia_femenina_nonZeroEntries", "alcaldia_masculina_nonZeroEntries"]
+            geo_detail: ["alcaldia", "ageb", "alcaldia_femenina", "alcaldia_masculina", "ageb_femenina", "ageb_masculina", "alcaldia_nonzeroentries", "alcaldia_femenina_nonzeroentries", "alcaldia_masculina_nonzeroentries"]
         """
         # set root path
         self.root = root
         
-        list_detail = ["alcaldia", "ageb", "alcaldia_femenina", "alcaldia_masculina", "ageb_femenina", "ageb_masculina", "alcaldia_nonZeroEntries", "alcaldia_femenina_nonZeroEntries", "alcaldia_masculina_nonZeroEntries"]
+        list_detail = ["alcaldia", "ageb", "alcaldia_femenina", "alcaldia_masculina", "ageb_femenina", "ageb_masculina", "alcaldia_nonzeroentries", "alcaldia_femenina_nonzeroentries", "alcaldia_masculina_nonzeroentries"]
         if geo_detail.lower() not in list_detail:
             raise ValueError('Desired crime not in list: "%s"' % (geo_detail))
             
