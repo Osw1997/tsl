@@ -159,19 +159,19 @@ class CrimeMexicoCityTTL(DatetimeDataset):
             file = np.DataSource().open('https://drive.google.com/uc?id=1-FXQBe9eZHxcGyUBGRXdUYSxGL6PM2yH')
             dist = np.load(file.name)
 
-        elif self.geo_detail == 'alcaldia_nonZeroEntries':
+        elif self.geo_detail == 'alcaldia_nonzeroentries':
             df = pd.read_csv('https://drive.google.com/uc?id=1--5d2KjUOcEnZGRzv_Pisxx66PtJ3zUL')
             df['date'] = pd.to_datetime(df['date'])
             df.set_index('date', inplace=True)
             file = np.DataSource().open('https://drive.google.com/uc?id=1-7T8HJ062JdnD7yfl3OUY0us2hp3-0ua')
             dist = np.load(file.name)
-        elif self.geo_detail == 'alcaldia_femenina_nonZeroEntries':
+        elif self.geo_detail == 'alcaldia_femenina_nonzeroentries':
             df = pd.read_csv('https://drive.google.com/uc?id=1-Coc57nfnihAV61S48Q-wAfegh1_L6Wd')
             df['date'] = pd.to_datetime(df['date'])
             df.set_index('date', inplace=True)
             file = np.DataSource().open('https://drive.google.com/uc?id=1-T7QTiRV80eS71wIc6NzFOhDGZ3pd5eP')
             dist = np.load(file.name)
-        elif self.geo_detail == 'alcaldia_masculina_nonZeroEntries':
+        elif self.geo_detail == 'alcaldia_masculina_nonzeroentries':
             df = pd.read_csv('https://drive.google.com/uc?id=1-SjwBsAIqVTRi-Dt4GqIlHY7EhkmGObn')
             df['date'] = pd.to_datetime(df['date'])
             df.set_index('date', inplace=True)
